@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-otel-deployment
+  namespace: flask-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-otel
+  template:
+    metadata:
+      labels:
+        app: flask-otel
+    spec:
+      containers:
+        - name: flask-otel-container
+          image: flask-otel-app:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9001
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: "flask"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://host.minikube.internal:4317"
+            - name: OTEL_PYTHON_LOG_CORRELATION
+              value: "true"
+            - name: OTEL_TRACES_EXPORTER
+              value: "otlp"
+            - name: OTEL_METRICS_EXPORTER
+              value: "otlp"
+            - name: OTEL_LOGS_EXPORTER
+              value: "otlp"
+      # affinity:
+      #   podAntiAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       - labelSelector:
+      #           matchExpressions:
+      #             - key: app
+      #               operator: In
+      #               values:
+      #                 - flask-otel
+      #         topologyKey: "kubernetes.io/hostname"

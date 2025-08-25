@@ -1,0 +1,287 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4317"
+      http:
+        endpoint: "0.0.0.0:4318"
+
+processors:
+  batch:
+
+  # --- Laravel filters ---
+  filter/laravel_traces:
+    traces:
+      span:
+        - 'resource.attributes["service.name"] != "laravel"'
+  filter/laravel_metrics:
+    metrics:
+      datapoint:
+        - 'resource.attributes["service.name"] != "laravel"'
+  filter/laravel_logs:
+    logs:
+      log_record:
+        - 'resource.attributes["service.name"] != "laravel"'
+
+  # --- Flask filters ---
+  filter/flask_traces:
+    traces:
+      span:
+        - 'resource.attributes["service.name"] != "flask"'
+  filter/flask_metrics:
+    metrics:
+      datapoint:
+        - 'resource.attributes["service.name"] != "flask"'
+  filter/flask_logs:
+    logs:
+      log_record:
+        - 'resource.attributes["service.name"] != "flask"'
+
+  # --- Node filters ---
+  filter/node_traces:
+    traces:
+      span:
+        - 'resource.attributes["service.name"] != "node"'
+  filter/node_metrics:
+    metrics:
+      datapoint:
+        - 'resource.attributes["service.name"] != "node"'
+  filter/node_logs:
+    logs:
+      log_record:
+        - 'resource.attributes["service.name"] != "node"'
+
+  # --- Infrastructure Node-level filters ---
+  filter/minikube_node_traces:
+    traces:
+      span:
+        - 'resource.attributes["k8s.node.name"] != "minikube"'
+  filter/minikube_node_metrics:
+    metrics:
+      datapoint:
+        - 'resource.attributes["k8s.node.name"] != "minikube"'
+  filter/minikube_node_logs:
+    logs:
+      log_record:
+        - 'resource.attributes["k8s.node.name"] != "minikube"'
+
+  # --- Infrastructure Pod-level filters ---
+  filter/otel_agent_pod_traces:
+    traces:
+      span:
+        - 'resource.attributes["signoz.component"] != "otel-agent"'
+  filter/otel_agent_pod_metrics:
+    metrics:
+      datapoint:
+        - 'resource.attributes["signoz.component"] != "otel-agent"'
+  filter/otel_agent_pod_logs:
+    logs:
+      log_record:
+        - 'resource.attributes["signoz.component"] != "otel-agent"'
+
+exporters:
+  # --- Laravel ---
+  kafka/laravel_traces:
+    brokers: ["localhost:9094"]
+    topic: demo-laravel-traces
+    encoding: otlp_json
+  kafka/laravel_metrics:
+    brokers: ["localhost:9094"]
+    topic: demo-laravel-metrics
+    encoding: otlp_json
+  kafka/laravel_logs:
+    brokers: ["localhost:9094"]
+    topic: demo-laravel-logs
+    encoding: otlp_json
+
+  file/laravel_traces:
+    path: ./oteloutput/demo-laravel-traces.json
+    format: json
+  file/laravel_metrics:
+    path: ./oteloutput/demo-laravel-metrics.json
+    format: json
+  file/laravel_logs:
+    path: ./oteloutput/demo-laravel-logs.json
+    format: json
+
+  # --- Flask ---
+  kafka/flask_traces:
+    brokers: ["localhost:9094"]
+    topic: demo-flask-traces
+    encoding: otlp_json
+  kafka/flask_metrics:
+    brokers: ["localhost:9094"]
+    topic: demo-flask-metrics
+    encoding: otlp_json
+  kafka/flask_logs:
+    brokers: ["localhost:9094"]
+    topic: demo-flask-logs
+    encoding: otlp_json
+
+  file/flask_traces:
+    path: ./oteloutput/demo-flask-traces.json
+    format: json
+  file/flask_metrics:
+    path: ./oteloutput/demo-flask-metrics.json
+    format: json
+  file/flask_logs:
+    path: ./oteloutput/demo-flask-logs.json
+    format: json
+
+  # --- Node ---
+  kafka/node_traces:
+    brokers: ["localhost:9094"]
+    topic: demo-node-traces
+    encoding: otlp_json
+  kafka/node_metrics:
+    brokers: ["localhost:9094"]
+    topic: demo-node-metrics
+    encoding: otlp_json
+  kafka/node_logs:
+    brokers: ["localhost:9094"]
+    topic: demo-node-logs
+    encoding: otlp_json
+
+  file/node_traces:
+    path: ./oteloutput/demo-node-traces.json
+    format: json
+  file/node_metrics:
+    path: ./oteloutput/demo-node-metrics.json
+    format: json
+  file/node_logs:
+    path: ./oteloutput/demo-node-logs.json
+    format: json
+
+  # --- Infrastructure Node-level ---
+  kafka/minikube_node_traces:
+    brokers: ["localhost:9094"]
+    topic: demo-minikube-node_traces
+    encoding: otlp_json
+  kafka/minikube_node_metrics:
+    brokers: ["localhost:9094"]
+    topic: demo-minikube-node_metrics
+    encoding: otlp_json
+  kafka/minikube_node_logs:
+    brokers: ["localhost:9094"]
+    topic: demo-minikube-node_logs
+    encoding: otlp_json
+
+  file/minikube_node_traces:
+    path: ./oteloutput/minikube_node_traces.json
+    format: json
+  file/minikube_node_metrics:
+    path: ./oteloutput/minikube_node_metrics.json
+    format: json
+  file/minikube_node_logs:
+    path: ./oteloutput/minikube_node_logs.json
+    format: json
+
+  # --- Infrastructure Pod-level ---
+  kafka/otel_agent_pod_traces:
+    brokers: ["localhost:9094"]
+    topic: demo-otel-pod_traces
+    encoding: otlp_json
+  kafka/otel_agent_pod_metrics:
+    brokers: ["localhost:9094"]
+    topic: demo-otel-pod_metrics
+    encoding: otlp_json
+  kafka/otel_agent_pod_logs:
+    brokers: ["localhost:9094"]
+    topic: demo-otel-pod_logs
+    encoding: otlp_json
+
+  file/otel_agent_pod_traces:
+    path: ./oteloutput/otel_agent_pod_traces.json
+    format: json
+  file/otel_agent_pod_metrics:
+    path: ./oteloutput/otel_agent_pod_metrics.json
+    format: json
+  file/otel_agent_pod_logs:
+    path: ./oteloutput/otel_agent_pod_logs.json
+    format: json
+
+  # --- Debug (shared) ---
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    # --- Laravel ---
+    traces/laravel:
+      receivers: [otlp]
+      processors: [filter/laravel_traces, batch]
+      exporters: [kafka/laravel_traces, file/laravel_traces, debug]
+
+    metrics/laravel:
+      receivers: [otlp]
+      processors: [filter/laravel_metrics, batch]
+      exporters: [kafka/laravel_metrics, file/laravel_metrics, debug]
+
+    logs/laravel:
+      receivers: [otlp]
+      processors: [filter/laravel_logs, batch]
+      exporters: [kafka/laravel_logs, file/laravel_logs, debug]
+
+    # --- Flask ---
+    traces/flask:
+      receivers: [otlp]
+      processors: [filter/flask_traces, batch]
+      exporters: [kafka/flask_traces, file/flask_traces, debug]
+
+    metrics/flask:
+      receivers: [otlp]
+      processors: [filter/flask_metrics, batch]
+      exporters: [kafka/flask_metrics, file/flask_metrics, debug]
+
+    logs/flask:
+      receivers: [otlp]
+      processors: [filter/flask_logs, batch]
+      exporters: [kafka/flask_logs, file/flask_logs, debug]
+
+    # --- Node ---
+    traces/node:
+      receivers: [otlp]
+      processors: [filter/node_traces, batch]
+      exporters: [kafka/node_traces, file/node_traces, debug]
+
+    metrics/node:
+      receivers: [otlp]
+      processors: [filter/node_metrics, batch]
+      exporters: [kafka/node_metrics, file/node_metrics, debug]
+
+    logs/node:
+      receivers: [otlp]
+      processors: [filter/node_logs, batch]
+      exporters: [kafka/node_logs, file/node_logs, debug]
+
+    # --- Infrastructure Node-level ---
+    traces/minikube_node:
+      receivers: [otlp]
+      processors: [filter/minikube_node_traces, batch]
+      exporters: [kafka/minikube_node_traces, file/minikube_node_traces, debug]
+
+    metrics/minikube_node:
+      receivers: [otlp]
+      processors: [filter/minikube_node_metrics, batch]
+      exporters: [kafka/minikube_node_metrics, file/minikube_node_metrics, debug]
+
+    logs/minikube_node:
+      receivers: [otlp]
+      processors: [filter/minikube_node_logs, batch]
+      exporters: [kafka/minikube_node_logs, file/minikube_node_logs, debug]
+
+    # --- Infrastructure Pod-level ---
+    traces/otel_agent_pod:
+      receivers: [otlp]
+      processors: [filter/otel_agent_pod_traces, batch]
+      exporters: [kafka/otel_agent_pod_traces, file/otel_agent_pod_traces, debug]
+
+    metrics/otel_agent_pod:
+      receivers: [otlp]
+      processors: [filter/otel_agent_pod_metrics, batch]
+      exporters: [kafka/otel_agent_pod_metrics, file/otel_agent_pod_metrics, debug]
+
+    logs/otel_agent_pod:
+      receivers: [otlp]
+      processors: [filter/otel_agent_pod_logs, batch]
+      exporters: [kafka/otel_agent_pod_logs, file/otel_agent_pod_logs, debug]

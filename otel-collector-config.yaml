@@ -1,0 +1,117 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4317"
+      http:
+        endpoint: "0.0.0.0:4318"
+
+processors:
+  filter/app1:
+    error_mode: ignore
+    traces:
+      span:
+        - 'resource.attributes["service.name"] != "app1"'
+    metrics:
+      datapoint:
+        - 'resource.attributes["service.name"] != "app1"'
+    logs:
+      log_record:
+        - 'resource.attributes["service.name"] != "app1"'
+
+  filter/app2:
+    error_mode: ignore
+    traces:
+      span:
+        - 'resource.attributes["service.name"] != "app2"'
+    metrics:
+      datapoint:
+        - 'resource.attributes["service.name"] != "app2"'
+    logs:
+      log_record:
+        - 'resource.attributes["service.name"] != "app2"'
+
+  batch:
+
+exporters:
+  # App1
+  file/app1_traces:
+    path: ./oteloutput/app1_traces.json
+    append: true
+    format: json
+  file/app1_metrics:
+    path: ./oteloutput/app1_metrics.json
+    append: true
+    format: json
+  file/app1_logs:
+    path: ./oteloutput/app1_logs.json
+    append: true
+    format: json
+
+  # App2
+  file/app2_traces:
+    path: ./oteloutput/app2_traces.json
+    append: true
+    format: json
+  file/app2_metrics:
+    path: ./oteloutput/app2_metrics.json
+    append: true
+    format: json
+  file/app2_logs:
+    path: ./oteloutput/app2_logs.json
+    append: true
+    format: json
+
+  kafka/app1_traces:
+    brokers: ["localhost:9094"]
+    topic: demo-app1-traces
+    encoding: otlp_json
+
+  kafka/app1_metrics:
+    brokers: ["localhost:9094"]
+    topic: demo-app1-metrics
+    encoding: otlp_json
+
+  kafka/app1_logs:
+    brokers: ["localhost:9094"]
+    topic: demo-app1-logs
+    encoding: otlp_json
+
+  # Debug output to terminal
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    # Traces
+    traces/app1:
+      receivers: [otlp]
+      processors: [filter/app1, batch]
+      exporters: [file/app1_traces, kafka/app1_traces, debug]
+
+    traces/app2:
+      receivers: [otlp]
+      processors: [filter/app2, batch]
+      exporters: [file/app2_traces, debug]
+
+    # Metrics
+    metrics/app1:
+      receivers: [otlp]
+      processors: [filter/app1, batch]
+      exporters: [file/app1_metrics, kafka/app1_metrics, debug]
+
+    metrics/app2:
+      receivers: [otlp]
+      processors: [filter/app2, batch]
+      exporters: [file/app2_metrics, debug]
+
+    # Logs
+    logs/app1:
+      receivers: [otlp]
+      processors: [filter/app1, batch]
+      exporters: [file/app1_logs, kafka/app1_logs, debug]
+
+    logs/app2:
+      receivers: [otlp]
+      processors: [filter/app2, batch]
+      exporters: [file/app2_logs, debug]

@@ -1,0 +1,11 @@
+global:
+  cloud: others
+  clusterName: my-cluster
+  deploymentEnvironment: "minikube-env"
+otelCollectorEndpoint: http://host.minikube.internal:4317
+otelInsecure: true
+presets:
+  otlpExporter:
+    enabled: true
+  loggingExporter:
+    enabled: false
