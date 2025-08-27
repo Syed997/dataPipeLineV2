@@ -21,7 +21,7 @@ services:
       - "9094:9094"
     networks:
       - demo
-      - signoz-net
+      # - signoz-net
 
   producer:
     build:
@@ -71,8 +71,8 @@ services:
 networks:
   demo:
     driver: bridge
-  signoz-net:
-    external: true
+  # signoz-net:
+  #   external: true
 
 volumes:
   clickhouse_data:
