@@ -7,7 +7,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends python3-pip && 
 RUN pip3 install --no-cache-dir \
     flask==3.0.3 \
     clickhouse-driver==0.2.9 \
-    pyspark
+    pyspark \
+    pandas==2.2.2 \
+    numpy==1.26.4
 
 # Spark already includes py4j; we'll pass Kafka package at spark-submit time
 USER 1001
