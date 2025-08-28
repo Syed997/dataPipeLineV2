@@ -12,14 +12,7 @@ RUN pip3 install --no-cache-dir \
 USER 1001
 
 WORKDIR /app
-COPY main.py .
-COPY config.py .
-COPY clickhouse_setup.py .
-COPY utils.py .
-COPY cache.py .
-COPY feature_extraction.py .
-COPY api.py .
-COPY spark_streaming.py .
+COPY . .
 COPY --chmod=755 run.sh .
 
 EXPOSE 5001 4040

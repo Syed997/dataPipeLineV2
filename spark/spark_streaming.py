@@ -1,9 +1,13 @@
 from datetime import datetime
 from collections import defaultdict
 import json
-from feature_extraction import (extract_log_features, extract_trace_features, extract_metric_features,
-                                extract_enhanced_features, calculate_sliding_features,
-                                extract_infra_health_features, extract_correlation_features)
+from extract_log_features_processor import extract_log_features
+from extract_trace_features_processor import extract_trace_features
+from extract_metric_features_processor import extract_metric_features
+from extract_enhanced_features_processor import extract_enhanced_features
+from calculate_sliding_features_processor import calculate_sliding_features
+from extract_infra_health_features_processor import extract_infra_health_features
+from extract_correlation_features_processor import extract_correlation_features
 from cache import update_historical_cache, get_recent_messages
 from utils import calculate_trend
 
