@@ -54,6 +54,8 @@ services:
     ports:
       - "5001:5001"
       - "4040:4040"
+    volumes:
+      - ./spark/exports:/app/exports:rw
     networks:
       - demo
 
