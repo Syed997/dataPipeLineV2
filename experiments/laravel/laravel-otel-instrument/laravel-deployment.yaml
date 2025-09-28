@@ -32,6 +32,13 @@ spec:
           value: "root"
         - name: DB_PASSWORD
           value: "root"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"  # 0.1 CPU cores
+          limits:
+            memory: "128Mi"  # OOM kill if exceeded
+            cpu: "200m"   # Throttle if exceeded
 ---
 apiVersion: v1
 kind: Service
