@@ -30,7 +30,7 @@ def csv_export_worker(client, config):
             success = export_kafka_logs_to_csv(
                 client, 
                 output_file=output_file,
-                limit=config.get('CSV_EXPORT_LIMIT', 1000),  # Default limit of 1000 records
+                limit=config.get('CSV_EXPORT_LIMIT', 1000000),  # Default limit of 1000 records
                 exclude_columns=['context_response_data']
             )
             print("******")
