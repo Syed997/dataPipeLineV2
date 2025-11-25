@@ -84,7 +84,7 @@ def extract_trace_features(data, message_ts):
                         break
                 
                 status = span.get("status", {})
-                is_error = 1 if (attrs.get("http.status_code", 0) >= 400) or status.get("code") == 2 else 0
+                is_error = 1 if int(attrs.get("http.status_code", 0)) >= 400 or status.get("code") == 2 else 0
                 
                 feature = {
                     "trace_id": trace_id,
