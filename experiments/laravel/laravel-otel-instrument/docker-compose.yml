@@ -10,6 +10,8 @@ services:
     #   - ./:/var/www
     ports:
       - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
     command: php artisan serve --host=0.0.0.0 --port=8000
     networks:
       - app-network
@@ -44,8 +46,8 @@ services:
 networks:
   app-network:
     driver: bridge
-  signoz-net:
-    external: true
+  # signoz-net:
+  #   external: true
 
 volumes:
   dbdata:

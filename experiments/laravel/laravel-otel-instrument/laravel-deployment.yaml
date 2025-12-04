@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laravel-app
+  labels:
+    app: laravel-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: laravel-app
+  template:
+    metadata:
+      labels:
+        app: laravel-app
+    spec:
+      containers:
+      - name: laravel-test-project
+        image: laravel-test-project:latest
+        imagePullPolicy: Never # Use local image from Minikube
+        ports:
+        - containerPort: 8000
+        command: ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+        env:
+        - name: DB_HOST
+          value: "php-postgres" # Service name of the PostgreSQL database
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_DATABASE
+          value: "test_crud"
+        - name: DB_USERNAME
+          value: "root"
+        - name: DB_PASSWORD
+          value: "root"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: laravel-app
+spec:
+  selector:
+    app: laravel-app
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
+    nodePort: 30007
+  type: NodePort
