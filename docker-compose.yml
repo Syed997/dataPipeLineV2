@@ -60,6 +60,45 @@ services:
     networks:
       - demo
 
+  # ------------------------------------------------------
+  # FLINK (SESSION MODE)
+  # ------------------------------------------------------
+
+  jobmanager:
+    build:
+      context: .
+      dockerfile: flink/Dockerfile
+    image: flink-py:2.1.1
+    container_name: jobmanager
+    command: jobmanager
+    ports:
+      - "8081:8081"
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 2
+    depends_on:
+      - kafka
+    networks:
+      - demo
+
+  taskmanager:
+    build:
+      context: .
+      dockerfile: flink/Dockerfile
+    image: flink-py:2.1.1
+    container_name: taskmanager
+    command: taskmanager
+    depends_on:
+      - jobmanager
+      - kafka
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 2
+    networks:
+      - demo
+
 networks:
   demo:
     driver: bridge
