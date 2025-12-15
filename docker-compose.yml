@@ -76,7 +76,6 @@ services:
     environment:
       FLINK_PROPERTIES: |
         jobmanager.rpc.address: jobmanager
-        taskmanager.numberOfTaskSlots: 2
     depends_on:
       - kafka
     networks:
