@@ -2,3 +2,7 @@
 otelcol-contrib
 oteloutput
 README.md
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
