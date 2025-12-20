@@ -5,12 +5,12 @@ from flink.operators.metric_preprocessor_operator import MetricPreprocessorOpera
 
 class MetricPreprocessorOperatorFunction(ProcessFunction):
     def __init__(self):
-        self.detector: Optional[MetricPreprocessorOperator] = None
+        self.operator: Optional[MetricPreprocessorOperator] = None
 
     def open(self, runtime_context: RuntimeContext):
-        self.detector = MetricPreprocessorOperator()
+        self.operator = MetricPreprocessorOperator()
 
     def process_element(self, value, ctx: 'ProcessFunction.Context'):
-        result = self.detector.run(value)
+        result = self.operator.run(value)
         if result:
             yield from result
