@@ -6,6 +6,56 @@ receivers:
       http:
         endpoint: "0.0.0.0:4318"
 
+  # Host metrics receiver - collects system/compute metrics
+  hostmetrics:
+    collection_interval: 10s
+    scrapers:
+      cpu:
+        metrics:
+          system.cpu.utilization:
+            enabled: true
+      memory:
+        metrics:
+          system.memory.utilization:
+            enabled: true
+      disk:
+      filesystem:
+        metrics:
+          system.filesystem.utilization:
+            enabled: true
+      network:
+      load:
+      paging:
+      processes:
+      process:
+        mute_process_name_error: true
+        mute_process_exe_error: true
+        mute_process_io_error: true
+
+#  # Pod-level resource metrics (requires Kubernetes)
+#  kubeletstats:
+#    collection_interval: 10s
+#    auth_type: serviceAccount
+#    endpoint: "https://${env:K8S_NODE_IP}:10250"
+#    insecure_skip_verify: true
+#    metric_groups:
+#      - pod
+#      - container
+#      - volume
+#    metrics:
+#      k8s.pod.cpu.utilization:
+#        enabled: true
+#      k8s.pod.memory.usage:
+#        enabled: true
+#      k8s.pod.network.io:
+#        enabled: true
+#      k8s.pod.filesystem.usage:
+#        enabled: true
+#      container.cpu.utilization:
+#        enabled: true
+#      container.memory.working_set:
+#        enabled: true
+
 processors:
   batch:
 
@@ -82,123 +132,85 @@ processors:
 exporters:
   # --- Laravel ---
   kafka/laravel_traces:
-    brokers: ["localhost:9094"]
+    brokers: ["kafka:9092"]
     topic: demo-laravel-traces
     encoding: otlp_json
   kafka/laravel_metrics:
-    brokers: ["localhost:9094"]
+    brokers: ["kafka:9092"]
     topic: demo-laravel-metrics
     encoding: otlp_json
   kafka/laravel_logs:
-    brokers: ["localhost:9094"]
+    brokers: ["kafka:9092"]
     topic: demo-laravel-logs
     encoding: otlp_json
 
-  file/laravel_traces:
-    path: ./oteloutput/demo-laravel-traces.json
-    format: json
-  file/laravel_metrics:
-    path: ./oteloutput/demo-laravel-metrics.json
-    format: json
-  file/laravel_logs:
-    path: ./oteloutput/demo-laravel-logs.json
-    format: json
-
   # --- Flask ---
   kafka/flask_traces:
-    brokers: ["localhost:9094"]
+    brokers: ["kafka:9092"]
     topic: demo-flask-traces
     encoding: otlp_json
   kafka/flask_metrics:
-    brokers: ["localhost:9094"]
+    brokers: ["kafka:9092"]
     topic: demo-flask-metrics
     encoding: otlp_json
   kafka/flask_logs:
-    brokers: ["localhost:9094"]
+    brokers: ["kafka:9092"]
     topic: demo-flask-logs
     encoding: otlp_json
 
-  file/flask_traces:
-    path: ./oteloutput/demo-flask-traces.json
-    format: json
-  file/flask_metrics:
-    path: ./oteloutput/demo-flask-metrics.json
-    format: json
-  file/flask_logs:
-    path: ./oteloutput/demo-flask-logs.json
-    format: json
-
   # --- Node ---
   kafka/node_traces:
-    brokers: ["localhost:9094"]
+    brokers: ["kafka:9092"]
     topic: demo-node-traces
     encoding: otlp_json
   kafka/node_metrics:
-    brokers: ["localhost:9094"]
+    brokers: ["kafka:9092"]
     topic: demo-node-metrics
     encoding: otlp_json
   kafka/node_logs:
-    brokers: ["localhost:9094"]
+    brokers: ["kafka:9092"]
     topic: demo-node-logs
     encoding: otlp_json
 
-  file/node_traces:
-    path: ./oteloutput/demo-node-traces.json
-    format: json
-  file/node_metrics:
-    path: ./oteloutput/demo-node-metrics.json
-    format: json
-  file/node_logs:
-    path: ./oteloutput/demo-node-logs.json
-    format: json
-
   # --- Infrastructure Node-level ---
   kafka/minikube_node_traces:
-    brokers: ["localhost:9094"]
+    brokers: ["kafka:9092"]
     topic: demo-minikube-node_traces
     encoding: otlp_json
   kafka/minikube_node_metrics:
-    brokers: ["localhost:9094"]
+    brokers: ["kafka:9092"]
     topic: demo-minikube-node_metrics
     encoding: otlp_json
   kafka/minikube_node_logs:
-    brokers: ["localhost:9094"]
+    brokers: ["kafka:9092"]
     topic: demo-minikube-node_logs
     encoding: otlp_json
 
-  file/minikube_node_traces:
-    path: ./oteloutput/minikube_node_traces.json
-    format: json
-  file/minikube_node_metrics:
-    path: ./oteloutput/minikube_node_metrics.json
-    format: json
-  file/minikube_node_logs:
-    path: ./oteloutput/minikube_node_logs.json
-    format: json
-
   # --- Infrastructure Pod-level ---
   kafka/otel_agent_pod_traces:
-    brokers: ["localhost:9094"]
+    brokers: ["kafka:9092"]
     topic: demo-otel-pod_traces
     encoding: otlp_json
   kafka/otel_agent_pod_metrics:
-    brokers: ["localhost:9094"]
+    brokers: ["kafka:9092"]
     topic: demo-otel-pod_metrics
     encoding: otlp_json
   kafka/otel_agent_pod_logs:
-    brokers: ["localhost:9094"]
+    brokers: ["kafka:9092"]
     topic: demo-otel-pod_logs
     encoding: otlp_json
 
-  file/otel_agent_pod_traces:
-    path: ./oteloutput/otel_agent_pod_traces.json
-    format: json
-  file/otel_agent_pod_metrics:
-    path: ./oteloutput/otel_agent_pod_metrics.json
-    format: json
-  file/otel_agent_pod_logs:
-    path: ./oteloutput/otel_agent_pod_logs.json
-    format: json
+  # --- Host Metrics ---
+  kafka/host_metrics:
+    brokers: ["kafka:9092"]
+    topic: demo-host-metrics
+    encoding: otlp_json
+
+  # --- Pod Metrics ---
+  kafka/pod_metrics:
+    brokers: ["kafka:9092"]
+    topic: demo-pod-metrics
+    encoding: otlp_json
 
   # --- Debug (shared) ---
   debug:
@@ -210,78 +222,90 @@ service:
     traces/laravel:
       receivers: [otlp]
       processors: [filter/laravel_traces, batch]
-      exporters: [kafka/laravel_traces, file/laravel_traces, debug]
+      exporters: [kafka/laravel_traces, debug]
 
     metrics/laravel:
       receivers: [otlp]
       processors: [filter/laravel_metrics, batch]
-      exporters: [kafka/laravel_metrics, file/laravel_metrics, debug]
+      exporters: [kafka/laravel_metrics, debug]
 
     logs/laravel:
       receivers: [otlp]
       processors: [filter/laravel_logs, batch]
-      exporters: [kafka/laravel_logs, file/laravel_logs, debug]
+      exporters: [kafka/laravel_logs, debug]
 
     # --- Flask ---
     traces/flask:
       receivers: [otlp]
       processors: [filter/flask_traces, batch]
-      exporters: [kafka/flask_traces, file/flask_traces, debug]
+      exporters: [kafka/flask_traces, debug]
 
     metrics/flask:
       receivers: [otlp]
       processors: [filter/flask_metrics, batch]
-      exporters: [kafka/flask_metrics, file/flask_metrics, debug]
+      exporters: [kafka/flask_metrics, debug]
 
     logs/flask:
       receivers: [otlp]
       processors: [filter/flask_logs, batch]
-      exporters: [kafka/flask_logs, file/flask_logs, debug]
+      exporters: [kafka/flask_logs, debug]
 
     # --- Node ---
     traces/node:
       receivers: [otlp]
       processors: [filter/node_traces, batch]
-      exporters: [kafka/node_traces, file/node_traces, debug]
+      exporters: [kafka/node_traces, debug]
 
     metrics/node:
       receivers: [otlp]
       processors: [filter/node_metrics, batch]
-      exporters: [kafka/node_metrics, file/node_metrics, debug]
+      exporters: [kafka/node_metrics, debug]
 
     logs/node:
       receivers: [otlp]
       processors: [filter/node_logs, batch]
-      exporters: [kafka/node_logs, file/node_logs, debug]
+      exporters: [kafka/node_logs, debug]
 
     # --- Infrastructure Node-level ---
     traces/minikube_node:
       receivers: [otlp]
       processors: [filter/minikube_node_traces, batch]
-      exporters: [kafka/minikube_node_traces, file/minikube_node_traces, debug]
+      exporters: [kafka/minikube_node_traces, debug]
 
     metrics/minikube_node:
       receivers: [otlp]
       processors: [filter/minikube_node_metrics, batch]
-      exporters: [kafka/minikube_node_metrics, file/minikube_node_metrics, debug]
+      exporters: [kafka/minikube_node_metrics, debug]
 
     logs/minikube_node:
       receivers: [otlp]
       processors: [filter/minikube_node_logs, batch]
-      exporters: [kafka/minikube_node_logs, file/minikube_node_logs, debug]
+      exporters: [kafka/minikube_node_logs, debug]
 
     # --- Infrastructure Pod-level ---
     traces/otel_agent_pod:
       receivers: [otlp]
       processors: [filter/otel_agent_pod_traces, batch]
-      exporters: [kafka/otel_agent_pod_traces, file/otel_agent_pod_traces, debug]
+      exporters: [kafka/otel_agent_pod_traces, debug]
 
     metrics/otel_agent_pod:
       receivers: [otlp]
       processors: [filter/otel_agent_pod_metrics, batch]
-      exporters: [kafka/otel_agent_pod_metrics, file/otel_agent_pod_metrics, debug]
+      exporters: [kafka/otel_agent_pod_metrics, debug]
 
     logs/otel_agent_pod:
       receivers: [otlp]
       processors: [filter/otel_agent_pod_logs, batch]
-      exporters: [kafka/otel_agent_pod_logs, file/otel_agent_pod_logs, debug]
+      exporters: [kafka/otel_agent_pod_logs, debug]
+
+    # --- Host Metrics ---
+    metrics/host:
+      receivers: [hostmetrics]
+      processors: [batch]
+      exporters: [kafka/host_metrics] ## Don't need DEBUG FOR NOW
+
+#    # --- Pod Metrics ---
+#    metrics/pod:
+#      receivers: [kubeletstats]
+#      processors: [batch]
+#      exporters: [kafka/pod_metrics, debug]
